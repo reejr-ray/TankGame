@@ -1,8 +1,11 @@
 package com.RayJr.gameobjects.moveable;
 
+import com.RayJr.MapLayout;
 import com.RayJr.TRE;
 import com.RayJr.gameobjects.Collidable;
 import com.RayJr.gameobjects.Drawable;
+import com.RayJr.gameobjects.HitPoints;
+import com.RayJr.gameobjects.LifeCounter;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -30,6 +33,7 @@ public class Tank implements Drawable, Collidable {
     private final int MAX_AMMO_COUNT = 30;
 
     private Vector<Bullet> ammo;
+    private int ammoUsed;
 
     private BufferedImage img;
     private BufferedImage playerBullet;
@@ -41,11 +45,17 @@ public class Tank implements Drawable, Collidable {
 
     private boolean show;
     private boolean isPlayer1;
+    private LifeCounter life;
+    private HitPoints hp;
 
 
     public Tank(boolean isPlayer1, int x, int y, int vx, int vy, int angle, BufferedImage img) {
-        playerBullet = null;
-        ammo = new Vector<>();
+        this.playerBullet = null;
+        this.ammo = new Vector<>();
+        this.ammoUsed = 0;
+        this.life = new LifeCounter(4, x, y);
+        this.hp = new HitPoints(100, x, y);
+
         try {
             if (isPlayer1) {
                 playerBullet = ImageIO.read(TRE.class.getResource("resources/p1_bullet.png"));
@@ -161,9 +171,9 @@ public class Tank implements Drawable, Collidable {
         /**
          * TODO make the tank shoot on a cooldown
          */
+        this.ammo.get(ammoUsed).setShow(true);
 
 
-        System.out.println("Bullet Created! at" + x + ", " + y + "!");
         // create a bullet object at a certain speed
         //
     }
@@ -172,6 +182,7 @@ public class Tank implements Drawable, Collidable {
 
 
     private void checkBorder() {
+        // MapLayout map = TRE.getGameMap(); ?????? why is this method static???
         if (x < 30) {
             x = 30;
         }
@@ -180,7 +191,7 @@ public class Tank implements Drawable, Collidable {
         }
         if (y < 40) {
             y = 40;
-        }
+    }
         if (y >= TRE.SCREEN_HEIGHT - 80) {
             y = TRE.SCREEN_HEIGHT - 80;
         }
@@ -200,6 +211,12 @@ public class Tank implements Drawable, Collidable {
         rotation.rotate(Math.toRadians(angle), this.img.getWidth() / 2.0, this.img.getHeight() / 2.0);
         Graphics2D g2d = (Graphics2D) g;
         g2d.drawImage(this.img, rotation, null);
+        for(Bullet b : ammo) {
+            if(b.isDrawable())
+                //b.update(10,10);
+                b.drawImage(g2d);
+
+        }
     }
 
 

@@ -46,7 +46,7 @@ public class Bullet implements Drawable, Collidable {
     public void setShow(boolean s){
         this.show = s;
     }
-    public void update(int w, int h){
+    public void update(int w, int h){ // TODO - change h and w to something useful
         if(y < h-40 && y > 0 && x > 0 && x < w-40 && show){
             x = x + Xspeed;
             y = y + Yspeed;

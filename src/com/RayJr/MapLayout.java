@@ -15,17 +15,21 @@ public class MapLayout {
 
     private int x, y;
     private final int PIXELS_PER_CHAR = 32;
-    private int[][] twodSpace;
-    private String filename;
     private String bWallPath, ubWallPath, floorPath;
     private ArrayList<BreakableWall> bWall;
     private ArrayList<UnbreakableWall> ubWall;
     private ArrayList<FloorTile> background;
     // private PowerUp mypowerup;
 
-    private void parseMap(){
-        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        File file = new File(classLoader.getResource(filename).getFile());
+    /** Allows for the parsing of txt files into maps usable by the Tank Game. This is a convient way to make a pseudo
+     * map editor. each character in the .txt file, as long as its located in the resources folder, will count as
+     * 32 pixels in the game world.
+     * @param filename name for the .txt file map
+     */
+    private void parseMap(String filename){
+
+        //ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+        File file = new File(getClass().getResource(filename).getFile());
         if(file.exists()){ // then read it.
             try {
                 BufferedImage img;
@@ -33,25 +37,29 @@ public class MapLayout {
                 String line;
                 int mapLength = 0, mapHeight = 0;
                 while((line = in.readLine()) != null){
-                    mapLength = line.length();
-                    mapHeight++;
+                    mapLength = 0; // reset after row is done
+
                     for(int i = 0; i <= (line.length() - 1); ++i){
+                        mapLength = i; // iterate over every char
+                        int tempX = mapLength * PIXELS_PER_CHAR; // convert to pixels
+                        int tempY = mapHeight * PIXELS_PER_CHAR; // convert to pixels
                         char temp = line.charAt(i);
-                        if(Character.toLowerCase(temp) == 'b'){ // breakable wall
+                        if(Character.toLowerCase(temp) == 'b'){ // if breakable wall
                             try{
                                 img = ImageIO.read(this.getClass().getResource(bWallPath));
-                                BreakableWall b = new BreakableWall(); // create at corresponding x and y
+                                BreakableWall b = new BreakableWall(img,tempX,tempY); // create at corresponding x and y
                                 bWall.add(b);
                             }catch(IOException ignored){}
-                        } else if(Character.toLowerCase(temp) == 'u') { // unbreakable wall
+                        } else if(Character.toLowerCase(temp) == 'u') { // if unbreakable wall
                             try{
                                 img = ImageIO.read(this.getClass().getResource(ubWallPath));
-                                UnbreakableWall ub = new UnbreakableWall(); //create at corresponding x and y
+                                UnbreakableWall ub = new UnbreakableWall(img,tempX,tempY); //create at corresponding x and y
                                 ubWall.add(ub);
                             } catch (IOException ignored){}
 
                         }  // else if(Character.toLowerCase(temp) == 'p') // powerup?
                     }
+                    mapHeight++; // only increment height after row and object creation is done,
 
                 }
                 mapLength *= PIXELS_PER_CHAR;
@@ -65,14 +73,14 @@ public class MapLayout {
     }
 
     public MapLayout(){
-        this.filename = "resources/Wasteland.txt";
+        String filename = "resources/Wasteland.txt";
         this.bWallPath = "resources/Wall2.gif";
         this.ubWallPath = "resources/Wall1.gif";
         this.floorPath = "resources/background.bmp";
         this.bWall = new ArrayList<>();
         this.ubWall = new ArrayList<>();
         this.background = new ArrayList<>();
-        parseMap();
+        parseMap(filename);
         BufferedImage img;
         try {
             int posX = 0, posY = 0;
@@ -81,8 +89,7 @@ public class MapLayout {
             int numTilesX = x / img.getWidth();
             int numTilesY = y / img.getHeight();
             for(int i = 0; i < numTilesX; ++i){
-                if(i > 0)
-                    posX++;
+
                 FloorTile tile = new FloorTile(img, posX, posY);
                 background.add(tile);
                 for(int k = 1; k < numTilesY; ++k){
@@ -90,6 +97,7 @@ public class MapLayout {
                     tile = new FloorTile(img, posX, posY);
                     background.add(tile);
                 }
+                posY = 0;
                 posX += img.getWidth();
             }
         } catch(IOException ie){
@@ -118,5 +126,8 @@ public class MapLayout {
         for(UnbreakableWall ub : ubWall)
             ub.drawImage(g);
     }
+
+    public int getX(){ return x;}
+    public int getY(){ return y;}
 
 }

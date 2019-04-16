@@ -104,32 +104,16 @@ public class TRE extends JPanel implements Runnable {
         TRE trex = new TRE();
         trex.init();
         trex.start();
-       /*
-        try {
-
-            while (true) {
-                trex.t1.update();
-                trex.t2.update();
-                trex.repaint();
-                System.out.println(trex.t1);
-                Thread.sleep(1000 / 144);
-            }
-        } catch (InterruptedException ignored) {
-
-        }
-        */
-
-
     }
 
 
 
 
     private void init() {
-        this.jf = new JFrame("Tank Rotation");
-        this.world = new BufferedImage(TRE.SCREEN_WIDTH, TRE.SCREEN_HEIGHT, BufferedImage.TYPE_INT_RGB);
-        this.running = false;
         this.gameMap = new MapLayout();
+        this.jf = new JFrame("Tank Game");
+        this.world = new BufferedImage(gameMap.getX() + 32, gameMap.getY(), BufferedImage.TYPE_INT_RGB);
+        this.running = false;
         BufferedImage t1img = null, t2img = null;
         try {
             BufferedImage tmp;
@@ -160,7 +144,7 @@ public class TRE extends JPanel implements Runnable {
         this.jf.addKeyListener(tc2);
 
 
-        this.jf.setSize(TRE.SCREEN_WIDTH, TRE.SCREEN_HEIGHT + 30);
+        this.jf.setSize(gameMap.getX() + 48, gameMap.getY() + 39);
         this.jf.setResizable(false);
         jf.setLocationRelativeTo(null);
 
@@ -174,12 +158,15 @@ public class TRE extends JPanel implements Runnable {
         Graphics2D g2 = (Graphics2D) g;
         buffer = world.createGraphics();
         super.paintComponent(g2);
-        this.gameMap.drawAllTiles(g2);
+        this.gameMap.drawAllTiles(buffer);
         this.t1.drawImage(buffer);
         this.t2.drawImage(buffer);
-        g2.drawImage(world,0,0,null);
+        g2.drawImage(world, 0, 0, null);
 
     }
+
+    public int getMapWidth(){ return gameMap.getX(); }
+    public int getMapHeight(){ return gameMap.getY(); }
 
 
 }
