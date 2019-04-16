@@ -16,7 +16,7 @@ import java.util.Vector;
 
 /**
  *
- * @author anthony-pc
+ * @author Raymond Rees Jr
  */
 public class Tank implements Drawable, Collidable {
 

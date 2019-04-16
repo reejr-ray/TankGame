@@ -19,7 +19,7 @@ import static javax.imageio.ImageIO.read;
 
 /**
  *
- * @author anthony-pc
+ * @author Raymond Rees Jr
  */
 public class TRE extends JPanel implements Runnable {
 
